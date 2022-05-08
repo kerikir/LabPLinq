@@ -100,6 +100,51 @@ namespace LabPLinq
             return evenNumbers;
         }
 
+         /// <summary>
+        /// Поиск нечетных чисел в строковом массиве
+        /// </summary>
+        /// <param name="arrayNumbers">Строковый массив для поиска</param>
+        /// <param name="time">Время выполнения запроса</param>
+        /// <returns>Отсортированный по убыванию строковый массив нечетных чисел</returns>
+        static List<int> FindOddNumbers(string[] arrayNumbers, out double time)
+        {
+            Stopwatch stopwatch = new Stopwatch();
+            TimeSpan timeSpan;
+            int[] tempArray = arrayNumbers.Select(str => Int32.Parse(str)).ToArray();
+
+            stopwatch.Start();
+            List<int> evenNumbers = tempArray.Where(i => i % 2 == 1).OrderByDescending(i => i).ToList();
+            stopwatch.Stop();
+
+            timeSpan = stopwatch.Elapsed;
+            time = timeSpan.TotalMilliseconds;
+
+            return evenNumbers;
+        }
+
+        /// <summary>
+        /// Параллельный поиск нечетных чисел в строковом массиве
+        /// </summary>
+        /// <param name="arrayNumbers">Строковый массив для поиска</param>
+        /// <param name="time">Время выполнения запроса</param>
+        /// <returns>Отсортированный по убыванию строковый массив нечетных чисел</returns>
+        static List<int> FindOddNumbersParallel(string[] arrayNumbers, out double time)
+        {
+            Stopwatch stopwatch = new Stopwatch();
+            TimeSpan timeSpan;
+            int[] tempArray = arrayNumbers.Select(str => Int32.Parse(str)).ToArray();
+
+            stopwatch.Start();
+            List<int> evenNumbers = tempArray.AsParallel().Where(i => i % 2 == 1).OrderByDescending(i => i).ToList();
+            stopwatch.Stop();
+
+            timeSpan = stopwatch.Elapsed;
+            time = timeSpan.TotalMilliseconds;
+
+            return evenNumbers;
+        }
+
+
         static void Main(string[] args)
         {
             int sizeArray;
@@ -120,9 +165,21 @@ namespace LabPLinq
             List<int> evenNumbers = FindEvenNumbers(arrayNumbers, out time);
             PrintTimeExecution("Четные числа", time);
             //PrintArray("Четные числа", time, evenNumbers);
+
             List<int> evenNumbersParallel = FindEvenNumbersParallel(arrayNumbers, out time);
             PrintTimeExecution("Четные числа (параллельно)", time);
             //PrintArray("Четные числа (параллельно)", time, evenNumbersParallel);
+
+            List<int> oddNumbers = FindOddNumbers(arrayNumbers, out time);
+            PrintTimeExecution("Нечетные числа", time);
+            //PrintArray("Нечетные числа", time, oddNumbers);
+
+            List<int> oddNumbersParallel = FindOddNumbersParallel(arrayNumbers, out time);
+            PrintTimeExecution("Нечетные числа (параллельно)", time);
+            //PrintArray("Нечетные числа (параллельно)", time, oddNumbersParallel);
+
+            Console.WriteLine("\n\nНажмите любую клавишу для выхода: ");
+            Console.ReadKey();
         }
     }
 }
