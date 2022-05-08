@@ -31,6 +31,22 @@ namespace LabPLinq
         }
 
         /// <summary>
+        /// Вывод списка в консоль
+        /// </summary>
+        /// <param name="message">Поясняющее сеообщение о выводе</param>
+        /// <param name="time">Информация о времени выполнения</param>
+        /// <param name="arrayNumbers">Список, который требуется вывести</param>
+        static void PrintArray(string message, double time, List<int> arrayNumbers)
+        {
+            Console.WriteLine(message + " (" + time.ToString() + " мс):");
+            for (int i = 0; i < arrayNumbers.Count; i++)
+            {
+                Console.WriteLine(arrayNumbers[i]);
+            }
+            Console.WriteLine("\n\n");
+        }
+
+        /// <summary>
         /// Поиск четных чисел в строковом массиве
         /// </summary>
         /// <param name="arrayNumbers">Строковый массив для поиска</param>
@@ -53,19 +69,25 @@ namespace LabPLinq
         }
 
         /// <summary>
-        /// Вывод списка в консоль
+        /// Параллельный поиск четных чисел в строковом массиве
         /// </summary>
-        /// <param name="message">Поясняющее сеообщение о выводе</param>
-        /// <param name="time">Информация о времени выполнения</param>
-        /// <param name="arrayNumbers">Список, который требуется вывести</param>
-        static void PrintArray(string message, double time, List<int> arrayNumbers)
+        /// <param name="arrayNumbers">Строковый массив для поиска</param>
+        /// <param name="time">Время выполнения запроса</param>
+        /// <returns>Отсортированный по убыванию строковый массив четных чисел</returns>
+        static List<int> FindEvenNumbersParallel(string[] arrayNumbers, out double time)
         {
-            Console.WriteLine(message + " (" + time.ToString() + "):");
-            for (int i = 0; i < arrayNumbers.Count; i++)
-            {
-                Console.WriteLine(arrayNumbers[i]);
-            }
-            Console.WriteLine("\n\n");
+            Stopwatch stopwatch = new Stopwatch();
+            TimeSpan timeSpan;
+            int[] tempArray = arrayNumbers.Select(str => Int32.Parse(str)).ToArray();
+
+            stopwatch.Start();
+            List<int> evenNumbers = tempArray.AsParallel().Where(i => i % 2 == 0).OrderByDescending(i => i).ToList();
+            stopwatch.Stop();
+
+            timeSpan = stopwatch.Elapsed;
+            time = timeSpan.TotalMilliseconds;
+
+            return evenNumbers;
         }
 
         static void Main(string[] args)
@@ -87,6 +109,8 @@ namespace LabPLinq
 
             List<int> evenNumbers = FindEvenNumbers(arrayNumbers, out time);
             PrintArray("Четные числа", time, evenNumbers);
+            List<int> evenNumbersParallel = FindEvenNumbersParallel(arrayNumbers, out time);
+            PrintArray("Четные числа (параллельно)", time, evenNumbersParallel);
         }
     }
 }
