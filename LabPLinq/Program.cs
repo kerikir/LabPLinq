@@ -47,6 +47,16 @@ namespace LabPLinq
         }
 
         /// <summary>
+        /// Вывод времени выполнения запроса
+        /// </summary>
+        /// <param name="message">Информация о запросе</param>
+        /// <param name="time">Время выполнения запроса</param>
+        static void PrintTimeExecution(string message, double time)
+        {
+            Console.WriteLine(message + " время выполнения запроса = " + time.ToString() + " мс");
+        }
+
+        /// <summary>
         /// Поиск четных чисел в строковом массиве
         /// </summary>
         /// <param name="arrayNumbers">Строковый массив для поиска</param>
@@ -108,9 +118,11 @@ namespace LabPLinq
             string[] arrayNumbers = GenerateArrayStringNumber(sizeArray, minValueArray, maxValueArray);
 
             List<int> evenNumbers = FindEvenNumbers(arrayNumbers, out time);
-            PrintArray("Четные числа", time, evenNumbers);
+            PrintTimeExecution("Четные числа", time);
+            //PrintArray("Четные числа", time, evenNumbers);
             List<int> evenNumbersParallel = FindEvenNumbersParallel(arrayNumbers, out time);
-            PrintArray("Четные числа (параллельно)", time, evenNumbersParallel);
+            PrintTimeExecution("Четные числа (параллельно)", time);
+            //PrintArray("Четные числа (параллельно)", time, evenNumbersParallel);
         }
     }
 }
