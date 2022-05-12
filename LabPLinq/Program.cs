@@ -186,7 +186,7 @@ namespace LabPLinq
         }
 
         /// <summary>
-        /// Функция нахождения всех чисел чья сумма второй и предпоследней цифры равны заданному числу
+        /// Функция параллельного нахождения всех чисел чья сумма второй и предпоследней цифры равны заданному числу
         /// </summary>
         /// <param name="arrayNumbers">Строковый массив чисел</param>
         /// <param name="rightNumber">Число которое должно получится при сумме</param>
@@ -218,6 +218,88 @@ namespace LabPLinq
 
             stopwatch.Start();
             List<int> listNumbers = arrayNumbers.AsParallel().Where((str) => sumCertainDigit(str, rightNumber)).Select(str => Int32.Parse(str)).OrderByDescending(i => i).ToList();
+            stopwatch.Stop();
+
+            timeSpan = stopwatch.Elapsed;
+            time = timeSpan.TotalMilliseconds;
+
+            return listNumbers;
+        }
+
+        /// <summary>
+        /// Функция нахождения суммы всех цифр числа, которые соответствует необходимому числу
+        /// </summary>
+        /// <param name="arrayNumbers">Строковый массив чисел</param>
+        /// <param name="rightNumber">Число которое должно получится при сумме</param>
+        /// <param name="time">Время выполнения</param>
+        /// <returns>Список чисел, у которых сумма цифр равна заданному числу</returns>
+        static List<int> FindSumNumbersInNumber(string[] arrayNumbers, int rightNumber, out double time)
+        {
+            Func<string, int, bool> sumDigitsInNumber = (str, rightNumber) =>
+            {
+                int sum = 0;
+
+                for (int i = 0; i < str.Length; i++)
+                {
+                    sum += int.Parse(str[i].ToString());
+                }
+
+                if (sum == rightNumber)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            };
+
+            Stopwatch stopwatch = new Stopwatch();
+            TimeSpan timeSpan;
+
+            stopwatch.Start();
+            List<int> listNumbers = arrayNumbers.Where((str) => sumDigitsInNumber(str, rightNumber)).Select(str => Int32.Parse(str)).OrderByDescending(i => i).ToList();
+            stopwatch.Stop();
+
+            timeSpan = stopwatch.Elapsed;
+            time = timeSpan.TotalMilliseconds;
+
+            return listNumbers;
+        }
+
+        /// <summary>
+        /// Функция параллельного нахождения суммы всех цифр числа, которые соответствует необходимому числу 
+        /// </summary>
+        /// <param name="arrayNumbers">Строковый массив чисел</param>
+        /// <param name="rightNumber">Число которое должно получится при сумме</param>
+        /// <param name="time">Время выполнения</param>
+        /// <returns>Список чисел, у которых сумма цифр равна заданному числу</returns>
+        static List<int> FindSumNumbersInNumberParallel(string[] arrayNumbers, int rightNumber, out double time)
+        {
+            Func<string, int, bool> sumDigitsInNumber = (str, rightNumber) =>
+            {
+                int sum = 0;
+
+                for (int i = 0; i < str.Length; i++)
+                {
+                    sum += int.Parse(str[i].ToString());
+                }
+
+                if (sum == rightNumber)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            };
+
+            Stopwatch stopwatch = new Stopwatch();
+            TimeSpan timeSpan;
+
+            stopwatch.Start();
+            List<int> listNumbers = arrayNumbers.AsParallel().Where((str) => sumDigitsInNumber(str, rightNumber)).Select(str => Int32.Parse(str)).OrderByDescending(i => i).ToList();
             stopwatch.Stop();
 
             timeSpan = stopwatch.Elapsed;
@@ -260,12 +342,20 @@ namespace LabPLinq
             //PrintArray("Нечетные числа (параллельно)", time, oddNumbersParallel);
 
             List<int> sumCertainDigit = FindSumSecondAndPenultimateNumbers(arrayNumbers, 6, out time);
-            PrintTimeExecution("Сумма второго и предпоследнего числа", time);
+            PrintTimeExecution("Сумма второго и предпоследнего числа = 6", time);
             //PrintArray("Сумма второго и предпоследнего числа", time, sumCertainDigit);
 
             List<int> sumCertainDigitParallel = FindSumSecondAndPenultimateNumbersParallel(arrayNumbers, 6, out time);
-            PrintTimeExecution("Сумма второго и предпоследнего числа (параллельно)", time);
+            PrintTimeExecution("Сумма второго и предпоследнего числа =6 (параллельно)", time);
             //PrintArray("Сумма второго и предпоследнего числа (параллельно)", time, sumCertainDigitParallel);
+
+            List<int> sumNumbersInNumber = FindSumNumbersInNumber(arrayNumbers, 13, out time);
+            PrintTimeExecution("Сумма всех чисел = 13", time);
+            //PrintArray("Сумма всех чисел = 13", time, sumNumbersInNumber);
+
+            List<int> sumNumbersInNumberParallel = FindSumNumbersInNumberParallel(arrayNumbers, 13, out time);
+            PrintTimeExecution("Сумма всех чисел = 13 (параллельно)", time);
+            //PrintArray("Сумма всех чисел = 13 (параллельно)", time, sumNumbersInNumberParallel);
 
             Console.WriteLine("\n\nНажмите любую клавишу для выхода: ");
             Console.ReadKey();
